@@ -132,3 +132,47 @@ def compute_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_widt
     g_r_t = g_r_t.astype(np.float64) / norm  # From int64.
 
     return r, g_r_t
+
+
+def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_width=0.005, n_bins=None,
+                self_correlation=True, periodic=True, opt=True):
+    """
+    Compute 2D RDF
+    """
+    if r_range is None:
+        r_range = np.array([0.0, 1.0])
+    r_range = ensure_type(r_range, dtype=np.float64, ndim=1, name='r_range',
+                          shape=(2,), warn_on_cast=False)
+    if n_bins is not None:
+        n_bins = int(n_bins)
+        if n_bins <= 0:
+            raise ValueError('`n_bins` must be a positive integer')
+    else:
+        n_bins = int((r_range[1] - r_range[0]) / bin_width)
+
+    if period_length is None:
+        period_length = traj.n_frames
+
+    # Add self pairs to `pairs`
+    if self_correlation:
+        pairs_set = np.unique(pairs)
+        pairs = np.vstack([np.vstack([pairs_set, pairs_set]).T, pairs])
+
+    g_r_t = np.zeros(shape=(len(times), n_bins))
+    num_chunks = int(np.floor(traj.n_frames / period_length))
+
+    # Returns shape (len(times), len(pairs))
+    frame_distances = compute_distances_t(traj, pairs, times, periodic=periodic, opt=opt)
+
+    for n, distances in enumerate(frame_distances):
+        tmp, edges = np.histogram(distances, range=r_range, bins=n_bins)
+        g_r_t[n, :] += tmp
+    r = 0.5 * (edges[1:] + edges[:-1])
+
+    # Normalize by volume of the spherical shell (see above)
+    A = np.pi * (np.power(edges[1:], 2) - np.power(edges[:-1], 2))
+    norm = len(pairs) / (period_length) * np.sum(1.0 / traj.unitcell_volumes) * A
+
+    g_r_t = g_r_t.astype(np.float64) / norm  # From int64.
+
+    return r, g_r_t
