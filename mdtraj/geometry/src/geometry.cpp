@@ -148,7 +148,7 @@ void dist_mic_triclinic_t(const float* xyz, const int* pairs, const float* box_m
         box_vec2 -= box_vec1*roundf(box_vec2[0]/box_vec1[0]);
         float recip_box_size[3] = {1.0f/box_vec1[0], 1.0f/box_vec2[1], 1.0f/box_vec3[2]};
         for (int j = 0; j < n_pairs; j++) {
-            // Compute the displacement.
+           // Compute the displacement.
 
             int offset1 = 3*pairs[2*j + 0];
             fvec4 pos1(xyz[offset1], xyz[offset1+1], xyz[offset1+2], 0);
@@ -205,9 +205,31 @@ void dist_mic_triclinic_t(const float* xyz, const int* pairs, const float* box_m
 
 void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* box_matrix,
                         float* distance_out, float* displacement_out, const int n_frames,
-                        const int n_atoms, const int n_pairs, const int non_dim, cutoff) {
+                        const int n_atoms, const int n_pairs, bool x, bool y, bool z) {
     bool store_displacement = (displacement_out != NULL);
     bool store_distance = (distance_out != NULL);
+    // Check which x,y or z coordinate to omit
+    if ((x == true)  && (y == true) && (z == false))
+    {
+        int index_1;
+        int index_2;
+        index_1 = 0
+        index_2 = 1
+    }
+    if ((x == true)  && (z == true) && (y == false))
+    {
+        int index_1;
+        int index_2;
+        index_1 = 0
+        index_2 = 2
+    }
+    if ((y == true)  && (z == true) && (x == false))
+    {
+        int index_1;
+        int index_2;
+        index_1 = 1
+        index_2 = 2
+    }
     for (int i = 0; i < n_frames; i++) {
         // Load the periodic box vectors and make sure they're in reduced form.
 
@@ -262,7 +284,7 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
                 displacement_out++;
             }
             if (store_distance) {
-                *distance_out = sqrtf(min_dist2);
+                *distance_out = sqrtf(min_dist2[index_1] + min_dist2[index_2]);
                 distance_out++;
             }
         }
@@ -273,6 +295,7 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
         box_matrix += 9;
     }
 }
+
 
 /**
  * Identify the closest contact between two groups of atoms.

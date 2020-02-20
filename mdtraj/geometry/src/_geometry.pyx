@@ -54,7 +54,7 @@ cdef extern from "geometry.h" nogil:
     void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs,
                               const float* box_matrix, float* distance_out,
                               float* displacement_out, int n_frames, int n_atoms,
-                              int n_pairs, int non_dim, cutoff)
+                              int n_pairs, bool x, bool y, bool z)
 
     void angle(const float* xyz, const int* triplets, float* out,
                int n_frames, int n_atoms, int n_angles)
@@ -143,6 +143,24 @@ def _dist_mic_t(float[:, :, ::1] xyz,
         dist_mic_t(&xyz[0,0,0], &pairs[0,0], &times[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs)
     else:
         dist_mic_triclinic_t(&xyz[0,0,0], &pairs[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs)
+
+
+def _dist_2d_mic_t(float[:, :, ::1] xyz,
+              int[:, ::1] pairs,
+              int[:, ::1] times,
+              float[:, :, ::1] box_matrix,
+              float[:, ::1] out,
+              orthogonal,
+              bool x,
+              bool y,
+              bool z):
+    cdef int n_times = times.shape[0]
+    cdef int n_atoms = xyz.shape[1]
+    cdef int n_pairs = pairs.shape[0]
+    if orthogonal:
+        dist_mic_t(&xyz[0,0,0], &pairs[0,0], &times[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs, x, y, z)
+    else:
+        dist_mic_2d_triclinic_t(&xyz[0,0,0], &pairs[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs, x, y, z)
 
 
 def _dist_mic_displacement(float[:, :, ::1] xyz,
