@@ -39,6 +39,10 @@ cdef extern from "geometry.h" nogil:
                     const float* box_matrix, float* distance_out,
                     float* displacement_out, const int n_times, const int n_atoms,
                     const int n_pairs)
+    void dist_2d_mic_t(const float* xyz, const int* pairs, const int* times,
+                    const float* box_matrix, float* distance_out,
+                    float* displacement_out, const int n_times, const int n_atoms,
+                    const int n_pairs, int non_dim, cutoff)
     void dist_mic_triclinic(const float* xyz, const int* pairs,
                             const float* box_matrix, float* distance_out,
                             float* displacement_out, int n_frames, int n_atoms,
@@ -47,6 +51,10 @@ cdef extern from "geometry.h" nogil:
                               const float* box_matrix, float* distance_out,
                               float* displacement_out, int n_frames, int n_atoms,
                               int n_pairs)
+    void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs,
+                              const float* box_matrix, float* distance_out,
+                              float* displacement_out, int n_frames, int n_atoms,
+                              int n_pairs, int non_dim, cutoff)
 
     void angle(const float* xyz, const int* triplets, float* out,
                int n_frames, int n_atoms, int n_angles)

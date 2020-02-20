@@ -162,7 +162,7 @@ def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_w
     num_chunks = int(np.floor(traj.n_frames / period_length))
 
     # Returns shape (len(times), len(pairs))
-    frame_distances = compute_distances_t(traj, pairs, times, periodic=periodic, opt=opt)
+    frame_distances = compute_2d_distances_t(traj, pairs, times, periodic=periodic, opt=opt, non_dim=non_dim, cutoff=cutoff)
 
     for n, distances in enumerate(frame_distances):
         tmp, edges = np.histogram(distances, range=r_range, bins=n_bins)
