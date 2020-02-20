@@ -136,8 +136,6 @@ def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True
             out = np.empty((times.shape[0], pairs.shape[0]), dtype=np.float32)
             "Why is _geometry called first here?"
             _geometry._dist_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, non_dim, cutoff)
-            out = out.reshape((times.shape[0], pairs.shape[0]))
-            return out
         else:
             return _distance_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1), orthogonal, non_dim, cutoff)
 
@@ -345,7 +343,7 @@ def _distance_mic_t(xyz, pairs, times, box_vectors, orthogonal):
         out[i] = dist
     return out
 
-def _distance_2d_mic_t(xyz, pairs, times, box_vectors, orthogonal, cutoff, non_dim):
+def _distance_2d_mic_t(xyz, pairs, times, box_vectors, orthogonal, non_dim, cutoff):
     """
     non_dim: dimension not looking at
     cutoff: chunk to look at in non_dim
@@ -358,7 +356,7 @@ def _distance_2d_mic_t(xyz, pairs, times, box_vectors, orthogonal, cutoff, non_d
                 r12 = r12[(np.abs(r12[:,:,non_dim]) < cutoff[1]) & (np.abs(r12[:,:,non_dim]) > cutoff[0])]
             else:
                 r12 = r12[np.abs(r12[:,:,non_dim]) < cutoff]
-        dist = np.linalg.norm(r12[:,:cutoff], aixs=1)
+        dist = np.linalg.norm(r12[:non_dim])
         out[i] = dist
     return out
 
