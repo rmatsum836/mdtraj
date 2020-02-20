@@ -115,7 +115,7 @@ def compute_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True):
     else:
         return _distance(xyz, pairs)
 
-def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True, non_dim=2, cutoff=None):
+def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True, non_dim=2, cutoff=None, coords=[True, True, False]):
     """
     non_dim: Dimension that distance isn't calculated in
     """
@@ -134,8 +134,9 @@ def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True
         orthogonal = np.allclose(traj.unitcell_angles, 90)
         if opt:
             out = np.empty((times.shape[0], pairs.shape[0]), dtype=np.float32)
-            "Why is _geometry called first here?"
-            _geometry._dist_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, non_dim, cutoff)
+            _geometry._dist_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, coords[0], coords[1], coords[2])
+            out = out.reshape((times.shape[0], pairs.shape[0]))
+            return out
         else:
             return _distance_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1), orthogonal, non_dim, cutoff)
 
@@ -348,16 +349,26 @@ def _distance_2d_mic_t(xyz, pairs, times, box_vectors, orthogonal, non_dim, cuto
     non_dim: dimension not looking at
     cutoff: chunk to look at in non_dim
     """
-    out = np.empty((pairs.shape[0]), dtype=np.float32)
-    for i, (time, pair) in enumerate(zip(times, pairs)):
-        r12 = xyz[time[1], pair[1], :] - xyz[time[0], pair[0], :]
-        if cutoff != None:
-            if len(cutoff) == 2:
-                r12 = r12[(np.abs(r12[:,:,non_dim]) < cutoff[1]) & (np.abs(r12[:,:,non_dim]) > cutoff[0])]
-            else:
-                r12 = r12[np.abs(r12[:,:,non_dim]) < cutoff]
-        dist = np.linalg.norm(r12[:non_dim])
-        out[i] = dist
+    #out = np.empty((times.shape[0], pairs.shape[0]), dtype=np.float32)
+    #for i, (time, pair) in enumerate(zip(times, pairs)):
+    #    import pdb; pdb.set_trace()
+    #    r12 = xyz[time[1], pair[1], :] - xyz[time[0], pair[0], :]
+    #    if cutoff != None:
+    #        if len(cutoff) == 2:
+    #            r12 = r12[(np.abs(r12[:,:,non_dim]) < cutoff[1]) & (np.abs(r12[:,:,non_dim]) > cutoff[0])]
+    #        else:
+    #            r12 = r12[np.abs(r12[:,:,non_dim]) < cutoff]
+    #    dist = np.linalg.norm(r12[:non_dim])
+    #    import pdb; pdb.set_trace()
+    #    out[i] = dist
+    #return out
+    out = np.empty((times.shape[0], pairs.shape[0]), dtype=np.float32)
+    for time in times:
+        for j, pair in enumerate(pairs):
+            r12 = xyz[time[1], pair[1], :] - xyz[time[0], pair[0], :]
+            dist = np.linalg.norm(r12[:cutoff])
+            out[(time[1] - time[0]), j] = dist
+
     return out
 
 

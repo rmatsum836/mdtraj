@@ -23,6 +23,7 @@
 ##############################################################################
 
 import sys
+from libcpp cimport bool
 
 ##############################################################################
 # Headers
@@ -39,10 +40,6 @@ cdef extern from "geometry.h" nogil:
                     const float* box_matrix, float* distance_out,
                     float* displacement_out, const int n_times, const int n_atoms,
                     const int n_pairs)
-    void dist_2d_mic_t(const float* xyz, const int* pairs, const int* times,
-                    const float* box_matrix, float* distance_out,
-                    float* displacement_out, const int n_times, const int n_atoms,
-                    const int n_pairs, int non_dim, cutoff)
     void dist_mic_triclinic(const float* xyz, const int* pairs,
                             const float* box_matrix, float* distance_out,
                             float* displacement_out, int n_frames, int n_atoms,
@@ -52,9 +49,9 @@ cdef extern from "geometry.h" nogil:
                               float* displacement_out, int n_frames, int n_atoms,
                               int n_pairs)
     void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs,
-                              const float* box_matrix, float* distance_out,
-                              float* displacement_out, int n_frames, int n_atoms,
-                              int n_pairs, bool x, bool y, bool z)
+                    const float* box_matrix, float* distance_out,
+                    float* displacement_out, const int n_times, const int n_atoms,
+                    const int n_pairs, bool x, bool y, bool z)
 
     void angle(const float* xyz, const int* triplets, float* out,
                int n_frames, int n_atoms, int n_angles)
@@ -158,9 +155,9 @@ def _dist_2d_mic_t(float[:, :, ::1] xyz,
     cdef int n_atoms = xyz.shape[1]
     cdef int n_pairs = pairs.shape[0]
     if orthogonal:
-        dist_mic_t(&xyz[0,0,0], &pairs[0,0], &times[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs, x, y, z)
+        dist_2d_mic_triclinic_t(&xyz[0,0,0], &pairs[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs, x, y, z)
     else:
-        dist_mic_2d_triclinic_t(&xyz[0,0,0], &pairs[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs, x, y, z)
+        dist_2d_mic_triclinic_t(&xyz[0,0,0], &pairs[0,0], &box_matrix[0,0,0], &out[0,0], NULL, n_times, n_atoms, n_pairs, x, y, z)
 
 
 def _dist_mic_displacement(float[:, :, ::1] xyz,

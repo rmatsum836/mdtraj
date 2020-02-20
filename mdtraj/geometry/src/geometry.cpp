@@ -211,24 +211,18 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
     // Check which x,y or z coordinate to omit
     if ((x == true)  && (y == true) && (z == false))
     {
-        int index_1;
-        int index_2;
-        index_1 = 0
-        index_2 = 1
+        int index_1 = 0;
+        int index_2 = 1;
     }
     if ((x == true)  && (z == true) && (y == false))
     {
-        int index_1;
-        int index_2;
-        index_1 = 0
-        index_2 = 2
+        int index_1 = 0;
+        int index_2 = 2;
     }
     if ((y == true)  && (z == true) && (x == false))
     {
-        int index_1;
-        int index_2;
-        index_1 = 1
-        index_2 = 2
+        int index_1 = 1;
+        int index_2 = 2;
     }
     for (int i = 0; i < n_frames; i++) {
         // Load the periodic box vectors and make sure they're in reduced form.
@@ -284,7 +278,9 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
                 displacement_out++;
             }
             if (store_distance) {
-                *distance_out = sqrtf(min_dist2[index_1] + min_dist2[index_2]);
+		float new_dist2 = min_dist2; //+ min_dist2[index_2];
+                int printf (new_dist2);
+                *distance_out = sqrtf(new_dist2);
                 distance_out++;
             }
         }
