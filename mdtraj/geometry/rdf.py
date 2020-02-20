@@ -25,9 +25,9 @@ from __future__ import print_function, division
 import numpy as np
 
 from mdtraj.utils import ensure_type
-from mdtraj.geometry.distance import compute_distances, compute_distances_t
+from mdtraj.geometry.distance import compute_distances, compute_distances_t, compute_2d_distances_t
 
-__all__ = ['compute_rdf', 'compute_rdf_t']
+__all__ = ['compute_rdf', 'compute_rdf_t', 'compute_2d_rdf_t']
 
 
 def compute_rdf(traj, pairs, r_range=None, bin_width=0.005, n_bins=None,
@@ -135,7 +135,7 @@ def compute_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_widt
 
 
 def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_width=0.005, n_bins=None,
-                self_correlation=True, periodic=True, opt=True):
+                self_correlation=True, periodic=True, opt=True, non_dim=2, cutoff=None):
     """
     Compute 2D RDF
     """

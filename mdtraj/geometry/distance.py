@@ -30,7 +30,7 @@ from . import _geometry
 
 
 __all__ = ['compute_distances', 'compute_distances_t', 'compute_displacements',
-           'compute_center_of_mass', 'compute_center_of_geometry',
+           'compute_center_of_mass', 'compute_center_of_geometry', 'compute_2d_distances_t',
            'find_closest_contact']
 
 
@@ -115,7 +115,7 @@ def compute_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True):
     else:
         return _distance(xyz, pairs)
 
-def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True, non_dim=2):
+def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True, non_dim=2, cutoff=None):
     """
     non_dim: Dimension that distance isn't calculated in
     """
@@ -135,7 +135,7 @@ def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True
         if opt:
             out = np.empty((times.shape[0], pairs.shape[0]), dtype=np.float32)
             "Why is _geometry called first here?"
-            _geometry._dist_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, non_dim, cutoff)
+            _geometry._distance_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, non_dim, cutoff)
             out = out.reshape((times.shape[0], pairs.shape[0]))
             return out
         else:
@@ -353,7 +353,8 @@ def _distance_2d_mic_t(xyz, pairs, times, box_vectors, orthogonal, cutoff, non_d
     out = np.empty((pairs.shape[0]), dtype=np.float32)
     for i, (time, pair) in enumerate(zip(times, pairs)):
         r12 = xyz[time[1], pair[1], :] - xyz[time[0], pair[0], :]
-        r12 = r12[np.abs(r12[:,:,non_dim]) < cutoff]
+        if cutoff != None:
+            r12 = r12[np.abs(r12[:,:,non_dim]) < cutoff]
         dist = np.linalg.norm(r12[:,:cutoff], aixs=1)
         out[i] = dist
     return out
