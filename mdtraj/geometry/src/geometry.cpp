@@ -209,20 +209,22 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
     bool store_displacement = (displacement_out != NULL);
     bool store_distance = (distance_out != NULL);
     // Check which x,y or z coordinate to omit
-    if ((x == true)  && (y == true) && (z == false))
+    int index_1 = 0;
+    int index_2 = 1;
+    if ((x == true)  && (y == true))
     {
-        int index_1 = 0;
-        int index_2 = 1;
+        index_1 = 0;
+        index_2 = 1;
     }
-    if ((x == true)  && (z == true) && (y == false))
+    if ((x == true)  && (z == true))
     {
-        int index_1 = 0;
-        int index_2 = 2;
+        index_1 = 0;
+        index_2 = 2;
     }
-    if ((y == true)  && (z == true) && (x == false))
+    if ((y == true)  && (z == true))
     {
-        int index_1 = 1;
-        int index_2 = 2;
+        index_1 = 1;
+        index_2 = 2;
     }
     for (int i = 0; i < n_frames; i++) {
         // Load the periodic box vectors and make sure they're in reduced form.
@@ -256,7 +258,9 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
                     fvec4 rb = ra + box_vec2*y;
                     for (int z = -1; z < 2; z++) {
                         fvec4 rc = rb + box_vec3*z;
-                        float dist2 = dot3(rc, rc);
+                        //float dist2 = dot3(rc, rc);
+                        fvec4 rd(rc[index_1], rc[index_2], 0, 0);
+                        float dist2 = dot3(rd, rd);
                         if (dist2 <= min_dist2) {
                             min_dist2 = dist2;
                             min_r = rc;
@@ -278,9 +282,8 @@ void dist_2d_mic_triclinic_t(const float* xyz, const int* pairs, const float* bo
                 displacement_out++;
             }
             if (store_distance) {
-		float new_dist2 = min_dist2; //+ min_dist2[index_2];
-                int printf (new_dist2);
-                *distance_out = sqrtf(new_dist2);
+                // TODO: Figure out shape of new_dist2
+                *distance_out = sqrtf(min_dist2);
                 distance_out++;
             }
         }
