@@ -215,12 +215,12 @@ void dist_t(const float* xyz, const int* pairs, const int* times,
 void dist_2d_mic_t(const float* xyz, const int* pairs, const int* times,
                 const float* box_matrix, float* distance_out,
                 float* displacement_out, const int n_times, const int n_atoms,
-                const int n_pairs)
+                const int n_pairs, bool x, bool y, bool z)
 
 #else
 void dist_2d_t(const float* xyz, const int* pairs, const int* times,
             float* distance_out, float* displacement_out, const int n_times,
-            const int n_atoms, const int n_pairs)
+            const int n_atoms, const int n_pairs, bool x, bool y, bool z)
 #endif
 {
     bool store_displacement = (displacement_out != NULL);
