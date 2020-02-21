@@ -229,8 +229,24 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
     fvec4 box_size(box_matrix[0], box_matrix[4], box_matrix[8], 0);
     fvec4 inv_box_size(1.0f/box_matrix[0], 1.0f/box_matrix[4], 1.0f/box_matrix[8], 0);
 #endif
+    // Check which x,y or z coordinate to omit
     int index_1 = 0;
     int index_2 = 1;
+    if ((x == true)  && (y == true))
+    {
+        index_1 = 0;
+        index_2 = 1;
+    }
+    if ((x == true)  && (z == true))
+    {
+        index_1 = 0;
+        index_2 = 2;
+    }
+    if ((y == true)  && (z == true))
+    {
+        index_1 = 1;
+        index_2 = 2;
+    }
     for (int i = 0; i < n_times; i++) {
 
         for (int j = 0; j < n_pairs; j++) {
@@ -249,7 +265,7 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
 #endif
      
             // Store results.
-            fvec4 rd(r12[index_1], r12[index_2], 0, 0);  
+            fvec4 r2d(r12[index_1], r12[index_2], 0, 0);  
             if (store_displacement) {
                 float temp[4];
                 r12.store(temp);
@@ -261,7 +277,7 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
                 displacement_out++;
             }
             if (store_distance) {
-                *distance_out = sqrtf(dot3(rd, rd));
+                *distance_out = sqrtf(dot3(r2d, r2d));
                 distance_out++;
             }
         }
