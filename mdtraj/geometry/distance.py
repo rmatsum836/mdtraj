@@ -122,6 +122,13 @@ def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True
     xyz = ensure_type(traj.xyz, dtype=np.float32, ndim=3, name='traj.xyz', shape=(None, None, 3), warn_on_cast=False)
     pairs = ensure_type(atom_pairs, dtype=np.int32, ndim=2, name='atom_pairs', shape=(None, 2), warn_on_cast=False)
     times = ensure_type(time_pairs, dtype=np.int32, ndim=2, name='time_pairs', shape=(None, 2), warn_on_cast=False)
+
+    # If cutoff==None, convert to an array of len(2)
+    if cutoff == None:
+        cutoff = [0,0]
+
+    if isinstance(cutoff, np.ndarray) == False:
+        cutoff = np.array(cutoff).astype('float32')
     if not np.all(np.logical_and(pairs < traj.n_atoms, pairs >= 0)):
         raise ValueError('atom_pairs must be between 0 and %d' % traj.n_atoms)
 
@@ -134,7 +141,7 @@ def compute_2d_distances_t(traj, atom_pairs, time_pairs, periodic=True, opt=True
         orthogonal = np.allclose(traj.unitcell_angles, 90)
         if opt:
             out = np.empty((times.shape[0], pairs.shape[0]), dtype=np.float32)
-            _geometry._dist_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, coords[0], coords[1], coords[2])
+            _geometry._dist_2d_mic_t(xyz, pairs, times, box.transpose(0, 2, 1).copy(), out, orthogonal, cutoff, coords[0], coords[1], coords[2])
             out = out.reshape((times.shape[0], pairs.shape[0]))
             return out
         else:

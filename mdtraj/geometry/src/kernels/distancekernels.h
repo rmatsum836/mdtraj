@@ -215,12 +215,12 @@ void dist_t(const float* xyz, const int* pairs, const int* times,
 void dist_2d_mic_t(const float* xyz, const int* pairs, const int* times,
                 const float* box_matrix, float* distance_out,
                 float* displacement_out, const int n_times, const int n_atoms,
-                const int n_pairs, bool x, bool y, bool z)
+                const int n_pairs, float* cutoff, bool x, bool y, bool z)
 
 #else
 void dist_2d_t(const float* xyz, const int* pairs, const int* times,
             float* distance_out, float* displacement_out, const int n_times,
-            const int n_atoms, const int n_pairs, bool x, bool y, bool z)
+            const int n_atoms, const int n_pairs, float* cutoff, bool x, bool y, bool z)
 #endif
 {
     bool store_displacement = (displacement_out != NULL);
@@ -229,6 +229,8 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
     fvec4 box_size(box_matrix[0], box_matrix[4], box_matrix[8], 0);
     fvec4 inv_box_size(1.0f/box_matrix[0], 1.0f/box_matrix[4], 1.0f/box_matrix[8], 0);
 #endif
+    // Create array to compare with 'cutoff'
+    float cutoff_test[2] = {0,0};
     // Check which x,y or z coordinate to omit
     int index_1 = 0;
     int index_2 = 1;
@@ -278,10 +280,12 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
             }
             if (store_distance) {
                 *distance_out = sqrtf(dot3(r2d, r2d));
-                if (r12[2] < 0.2) {
+                if (cutoff == cutoff_test) {
                     distance_out++;
                 }
-                //distance_out++;
+                if (r12[2] < cutoff[0] && r12[2] > cutoff[1]) {
+                    distance_out++;
+                }
             }
         }
     }
