@@ -421,8 +421,7 @@ static void store_energies(int* hbonds, float* henergies, int donor, int accepto
  *     If a particular residue does not contain a CA atom, or you want to skip
  *     the residue for another reason, this value should evaluate to True.
  *
- * Returns
- * -------
+ * Returns * -------
  * hbonds : array, shape=(n_frames, n_residues, 2)
  *     This is a little tricky, so bear with me. This array gives the indices
  *     of the residues that each backbone hbond *donor* is engaged in an hbond
