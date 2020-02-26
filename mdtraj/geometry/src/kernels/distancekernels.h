@@ -68,8 +68,7 @@ void dist(const float* xyz, const int* pairs, float* distance_out,
                 displacement_out++;
                 *displacement_out = temp[1];
                 displacement_out++;
-                *displacement_out = temp[2];
-                displacement_out++;
+                *displacement_out = temp[2]; displacement_out++;
             }
             if (store_distance) {
                 *distance_out = sqrtf(dot3(r12, r12));
@@ -231,6 +230,7 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
 #endif
     // Create array to compare with 'cutoff'
     float cutoff_test[2] = {0,0};
+
     // Check which x,y or z coordinate to omit
     int index_1 = 0;
     int index_2 = 1;
@@ -280,13 +280,21 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
             }
             if (store_distance) {
                 *distance_out = sqrtf(dot3(r2d, r2d));
-                if (cutoff == cutoff_test) {
-                    distance_out++;
+                bool check_equal = false;
+                for(int i=0; i<=2; i++){
+                    if (cutoff[i] == cutoff_test[i]) {
+                        //distance_out++
+                        check_equal = true;
+                    }
                 }
-                if (r12[2] < cutoff[0] && r12[2] > cutoff[1]) {
-                    distance_out++;
-                }
-            }
+                if (check_equal == false) {
+                    if (r2d[2] < cutoff[0] && r2d[2] > cutoff[1]) {
+                            distance_out++;
+                }   else{
+                      distance_out++;
+               }
+             }
+           } 
         }
     }
-}
+ }
