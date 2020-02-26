@@ -135,7 +135,7 @@ def compute_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_widt
 
 
 def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_width=0.005, n_bins=None,
-                self_correlation=True, periodic=True, opt=True, non_dim=2, cutoff=None, coords=[True, True, False]):
+                self_correlation=True, periodic=True, opt=True, non_dim=2, coords=[True, True, False]):
     """
     Compute 2D RDF
     """
@@ -143,6 +143,7 @@ def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_w
         r_range = np.array([0.0, 1.0])
     r_range = ensure_type(r_range, dtype=np.float64, ndim=1, name='r_range',
                           shape=(2,), warn_on_cast=False)
+    
     if n_bins is not None:
         n_bins = int(n_bins)
         if n_bins <= 0:
@@ -162,7 +163,7 @@ def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_w
     num_chunks = int(np.floor(traj.n_frames / period_length))
 
     # Returns shape (len(times), len(pairs))
-    frame_distances = compute_2d_distances_t(traj, pairs, times, periodic=periodic, opt=opt, cutoff=cutoff, coords=[True, True, False])
+    frame_distances = compute_2d_distances_t(traj, pairs, times, periodic=periodic, opt=opt, coords=[True, True, False])
 
     for n, distances in enumerate(frame_distances):
         tmp, edges = np.histogram(distances, range=r_range, bins=n_bins)

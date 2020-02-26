@@ -278,7 +278,7 @@ void dist_2d_t(const float* xyz, const int* pairs, const int* times,
             }
             if (store_distance) {
                 *distance_out = sqrtf(dot3(r2d, r2d));
-                distance_out++
+                distance_out++;
           }
         } 
       }
