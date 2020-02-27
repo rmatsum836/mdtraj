@@ -172,7 +172,7 @@ def compute_2d_rdf_t(traj, pairs, times, period_length=None, r_range=None, bin_w
 
     # Normalize by volume of the spherical shell (see above)
     A = np.pi * (np.power(edges[1:], 2) - np.power(edges[:-1], 2))
-    norm = len(pairs) / (period_length) * np.sum(1.0 / traj.unitcell_volumes) * A
+    norm = len(pairs) / (period_length) * np.sum(1.0 / (traj.unitcell_lengths[:,0] * traj.unitcell_lengths[:,1])) * A
 
     g_r_t = g_r_t.astype(np.float64) / norm  # From int64.
 
