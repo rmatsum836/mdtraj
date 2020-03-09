@@ -96,3 +96,13 @@ def test_rdf_t(get_fn):
             times.append([j*4+i, j*4])
 
     r, g_r_t = md.compute_rdf_t(traj, pairs, times, r_range=(0, 1), periodic=True, opt=True)
+
+def test_2d_rdf_t(get_fn):
+    traj = md.load(get_fn('tip3p_300K_1ATM.xtc'), top=get_fn('tip3p_300K_1ATM.pdb'))
+    pairs = traj.top.select_pairs('name O', 'name O')
+    times = list()
+    for j in range(100):
+        for i in range(4):
+            times.append([j*4+i, j*4])
+
+    r, g_r_t = md.compute_2d_rdf_t(traj, pairs, times, r_range=(0, 1), periodic=True, opt=True)
