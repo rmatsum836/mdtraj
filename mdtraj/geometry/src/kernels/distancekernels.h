@@ -142,7 +142,8 @@ void dist_t(const float* xyz, const int* pairs, const int* times,
 
         for (int j = 0; j < n_pairs; j++) {
             // Find where in xyz to find the appropriate coordinates
-            int time_offset1 = times[2*i + 0] * n_atoms * 3;
+            //int time_offset1 = times[2*i + 0] * n_atoms * 3;
+            int time_offset1 = times[2*0 + 0] * n_atoms * 3;
             int time_offset2 = times[2*i + 1] * n_atoms * 3;
             int pair_offset1 = pairs[2*j + 0] * 3;
             int pair_offset2 = pairs[2*j + 1] * 3;
